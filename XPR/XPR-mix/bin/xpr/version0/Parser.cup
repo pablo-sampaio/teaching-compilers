@@ -1,0 +1,37 @@
+package xpr.version0;
+
+import java_cup.runtime.*;
+
+
+/*****  Terminais (tokens) *****/
+
+terminal         MAIS, VEZES;
+terminal         PT_VIRG, ABRE_PAR, FECHA_PAR;
+terminal Integer NUMERO;
+
+
+/***** Nao-terminais *****/
+
+non terminal Integer expr;
+non terminal         program, comand;
+
+
+/***** Precedencia e associatividade *****/
+
+precedence left  MAIS;     //simbolo de menor precedencia
+precedence left  VEZES;    //simbolo de maior precedencia
+
+
+/***** A gramática *****/
+
+program ::= comand 
+          ;
+
+comand ::= expr PT_VIRG 
+         ;
+
+expr ::= NUMERO
+       | expr MAIS expr
+       | expr VEZES expr
+       | ABRE_PAR expr FECHA_PAR
+       ;

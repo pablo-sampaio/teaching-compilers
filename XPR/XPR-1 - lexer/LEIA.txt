@@ -1,0 +1,43 @@
+
+Exemplo do JFLex
+~~~~~~~~~~~~~~~~
+
+Este projeto mostra um analisador lexico para reconhecer os tokens da linguagem XPR-1. 
+Veja o documento com a descrição da sintaxe de XPR-1 (quanto à sua semântica, considere
+que ela é uma linguagem para avaliar expressões matemáticas).
+
+Passo-a-passo para rodar o exemplo:
+
+1) Importe o projeto no Eclipse por meio da opção "File->Import->Existing projects..."
+Selecione o diretório onde está o projeto, depois selecione "XPR-1-lexer" e o importe.
+
+2) O projeto já contém algumas classes auxiliares para o reconhecimento dos tokens, 
+que são as classes Token e TokenType. Dê uma olhada nestas duas classes. (Além delas, 
+há a classe TestLexer, que usaremos depois).
+
+3) A especificação do lexer está no arquivo "Lexer.flex", que se encontra na mesma
+pasta dos arquivos Token.java e TokenType.java. Abra esta especificação e tente entender
+o que fará lexer que será gerado a partir dela.
+
+4) Para gerar o lexer de XPR-1, clique duas vezes no arquivo "lib\JFlex.jar" a partir 
+do Eclipse. Uma janela do JFlex se abrirá. 
+=> Caso não funcione, pode ser que você não tenha a JVM devidamente instalada. 
+=> No Windows, configure a variável de ambiente PATH para apontar para o diretório onde
+a JRE está instalada. Edite o arquivo "abrir.cmd", para isso. 
+
+5) Na opção de "Lexycal specification" da janela do JFlex, abra o arquivo "Lexer.flex". 
+Na opção "Output directory", pode deixar o diretório preenchido automaticamente. Clique
+em "Generate". 
+
+6) Se tudo correr bem, o JFlex vai criar o arquivo de nome "Lexer.java" no pacote 
+"xpr.version1". No Eclipse, clique no projeto e pression F5 para ele listar o novo arquivo.
+
+7) Execute a classe "TestLexer". Digite uma string para testar e veja os tokens que
+são retornados. Compare com a especificação do lexer.
+
+8) Tente fazer uma alteração: acrescentar as palavras reservadas "if" e "else". Mexa na 
+especificação e onde mais for necessário, depois gere o lexer e teste-o.
+
+
+Pablo Azevedo Sampaio
+24/10/2014

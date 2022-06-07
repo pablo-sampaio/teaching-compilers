@@ -1,0 +1,6 @@
+//exemplo de menos unario (precisa alterar a gramatica)
+def x = 12 * 4 + 43;
+
+x + 5 - 10 - (-4);
+
+def soma = x + x*2;

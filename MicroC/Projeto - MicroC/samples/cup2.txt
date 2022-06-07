@@ -1,0 +1,17 @@
+int main() {
+   int b ;
+   float pi;
+  
+   b = 1 + 3 * 2;
+  
+   if (10 >= b) {
+      char b;
+
+      b = 'a';
+      b = b + 1;
+      
+      pi = 3.14;
+   }
+   
+   return b;
+}

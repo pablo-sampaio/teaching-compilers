@@ -1,0 +1,52 @@
+package xpr.version1;
+
+import java_cup.runtime.*;
+import xpr.version1.tree.*;
+
+
+/*****  Terminais (tokens) *****/
+
+terminal 	MAIS, MENOS, VEZES, DIVIDE, MENOS_UNARIO;
+terminal 	PT_VIRG, ABRE_PAR, FECHA_PAR, ATRIBUI, DEF;
+terminal String 	IDENTIFICADOR;
+terminal String 	NUMERO;
+
+
+/***** Nao-terminais *****/
+
+non terminal Programa	program;
+non terminal Expressao	expr;
+non terminal Comando    comand;
+
+
+/***** Precedencia e associatividade *****/
+
+precedence left  MAIS, MENOS;     //simbolos de menor precedencia
+precedence left  VEZES, DIVIDE;   //simbolo de maior precedencia
+
+
+/***** A gramática *****/
+
+program ::= comand:c program:prog
+          {:  
+          	  prog.addComando(c);
+              RESULT = prog; 
+          :}
+          
+          | /*vazio*/
+          {:  RESULT = new Programa();  :} 
+          ;
+
+comand ::= expr:e PT_VIRG   {: RESULT = new AvaliaExpressao(e);  :}
+         | DEF IDENTIFICADOR:id ATRIBUI expr:e PT_VIRG  {: RESULT = new DeclaraVariavel(id, e);   :}
+         ;
+
+expr ::= NUMERO:lexeme  {:  //System.out.print(" " + lexeme);  :}
+       | IDENTIFICADOR
+       | expr MAIS expr {:  //System.out.print(" +");  :}
+       | expr MENOS expr
+       | expr VEZES expr {:  //System.out.print(" *");  :}
+       | expr DIVIDE expr
+       | MENOS expr
+       | ABRE_PAR expr FECHA_PAR
+       ;

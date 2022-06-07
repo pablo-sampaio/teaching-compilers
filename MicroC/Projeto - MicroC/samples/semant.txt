@@ -1,0 +1,28 @@
+
+int global;
+
+int main() {
+    int var;
+    
+    global = 3;
+	var = 33;
+	
+	{
+		char var;
+		
+		var = 'b';
+		
+		{
+			int var;
+			var = 43;
+		}
+
+		{
+			int var;
+			var = 44;
+		}
+		
+		var = 'c';
+	}
+
+}

@@ -1,0 +1,72 @@
+Exemplo de uso do flex
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Este projeto do Dev-C++ mostra como construir um analisador lexer para reconhecer
+os tokens da linguagem XPR-1 (veja o documento com a descrição), usando o flex.
+
+O projeto contém um arquivo auxiliar com as definições dos tokens, que é o arquivo
+"token.h". Ele define um "enum" com os valores que serão retornados pelo lexer.
+
+A especificação do lexer está no arquivo "lexer.flex". Esse arquivo é dividido em 
+três seções similares ao exemplo do JFlex (de Java), porém mudando a ordem:
+
+  - a primeira seção têm macros de expressões regulares e alguns parâmetros para o
+    flex, como a opção "%{" <cod> "%}" que permite definir código no início do lexer.
+
+  - a segunda contém as regras léxicas
+
+  - a terceira contém código C puro, a ser copiado fielmente para o fim do lexer
+
+
+Explicação do exemplo lexer.flex
+--------------------------------
+
+Abaixo explica as três seções:
+
+1) Na primeira seção, defini que o arquivo de saída seria "lexer.c" e inclui o
+   arquivo "token.h" para poder usá-lo nas regras léxicas. Além disso, defini três
+   macros para serem usadas nas regras léxicas: whiteSpace, letra e numero.
+
+2) A segunda seção tem regras léxicas muito parecidas com as do exemplo do JFlex (em
+   Java). Observe que as regras léxicas só retornam o tipo do token, mas não retornam
+   o lexema (falarei mais sobre isso adiante).
+
+3) A função "main" testa se há algum parâmetro de linha de comando. Se houver, ela 
+   abre o arquivo passado; se não houver, ela usa a entrada do teclado (stdin) como
+   se fosse um arquivo. 
+   
+   Veja que, em ambos os casos, você tem que setar a variável global "yyin" (criada
+   pelo flex) para o arquivo a ser lido.
+   
+   Para obter o próximo token, a função main chama a função "yylex()", equivalente à 
+   função "nextToken()" definida em sala. Como observado antes, ela retorna apenas o
+   tipo do token. Caso seja necessário o lexema, é preciso acessar a variável "yytext",
+   que guarda uma string "char*".
+
+   
+Como rodar o projeto
+--------------------
+
+1) Abra a linha de comando dentro do diretório do projeto (execute "comando.cmd").
+
+2) Para gerar o lexer, digite "flex lexer.flex". O arquivo "lexer.c" será criado, 
+   já com a função main dentro dele.
+
+3) Abra o projeto "XPR-Compiler.dev" no Dev-C++.
+
+4) Compile o projeto.
+
+5) Volte a linha de comando e digite
+
+   - "XPR-Compiler.exe", para testar pelo teclado, 
+            ou
+   - "XPR-Compiler.exe <arquivo>", para testar o arquivo dado.
+
+   
+Mais informações:
+http://flex.sourceforge.net/manual/
+
+
+Pablo Azevedo Sampaio
+14/03/2009

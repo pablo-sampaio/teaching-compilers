@@ -1,0 +1,18 @@
+int a, b ;
+
+int main() {
+  int a, b ;
+  char b;
+
+  if (a== b) {
+    a = 10;
+  } else {
+    b = 'a';  //teste de comentario
+  }
+  
+  /* 
+       comentario multi-linha 
+   */
+
+  return a;
+}

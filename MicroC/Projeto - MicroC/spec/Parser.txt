@@ -1,0 +1,149 @@
+package microc.syntax;
+
+import microc.ast.*;
+import microc.ast.expression.*;
+import microc.ast.command.*;  
+
+import java_cup.runtime.*;
+
+parser code {:
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+        report_fatal_error("Erro de sintaxe no token \"" + cur_token.value + "\".", null);         
+    }
+:} 
+
+/*****  Terminais (tokens) *****/
+
+terminal String    VEZES, DIVIDIDO, MAIS, MENOS, OU, E, MENOS_UNARIO;
+terminal String    MENOR, MENOR_IGUAL, MAIOR, MAIOR_IGUAL;
+terminal String    IGUAL, DIFERENTE, RECEBE, PT_VIRG, VIRG;
+terminal String    ABRE_PAR, FECHA_PAR, ABRE_CHAVE, FECHA_CHAVE;
+terminal String    MAIN, IF, ELSE, WHILE, DO, RETURN;
+terminal String    TIPO_INT, TIPO_FLOAT, TIPO_CHAR;
+
+terminal String    IDENTIFICADOR;
+terminal Character LITERAL_CHAR;
+terminal Float     LITERAL_FLOAT;
+terminal Integer   LITERAL_INT;
+
+
+/***** Nao-terminais *****/
+
+non terminal Program         programa;
+non terminal Block           bloco;
+non terminal DeclarationList lista_decl;
+non terminal Declaration     decl_var;
+non terminal Type            tipo;
+non terminal IdentifierList  lista_ident;
+non terminal CommandList     lista_comandos;
+non terminal Command         comando;
+non terminal Expression      expressao, termo;
+
+
+/***** Precedencia e associatividade *****/
+precedence left  OU, E;           //simbolos de menor precedencia
+precedence left  IGUAL, DIFERENTE, MENOR,
+                 MAIOR, MENOR_IGUAL, MAIOR_IGUAL;
+precedence left  MAIS, MENOS;  
+precedence left  VEZES, DIVIDIDO;
+precedence right MENOS_UNARIO;    //simbolo de maior precedencia
+
+
+/***** A gramática *****/
+
+programa ::= lista_decl:d TIPO_INT MAIN ABRE_PAR FECHA_PAR bloco:b
+             {: RESULT = new Program(d, b); :}
+           ;
+
+bloco    ::= ABRE_CHAVE lista_decl:d lista_comandos:c FECHA_CHAVE
+             {: RESULT = new Block(d, c); :}
+           ;
+
+lista_decl ::= lista_decl:list decl_var:d
+               {:  list.add(d);  RESULT = list;  :}
+             | /*vazio*/
+               {: RESULT = new DeclarationList(); :}
+             ;
+
+decl_var ::= tipo:t IDENTIFICADOR:id lista_ident:list PT_VIRG
+             {:  list.add(0,id);  RESULT = new Declaration(t, list); :}
+           ;
+
+lista_ident ::= lista_ident:list VIRG IDENTIFICADOR:id
+                {:  list.add(id);  RESULT = list;  :} 
+              | /* vazio */
+                {:  RESULT = new IdentifierList(); :}
+              ;
+
+tipo ::= TIPO_INT 
+         {: RESULT = Type.INT; :}
+       | TIPO_FLOAT
+         {: RESULT = Type.FLOAT; :} 
+       | TIPO_CHAR 
+         {: RESULT = Type.CHAR; :}
+       ;
+
+lista_comandos ::= lista_comandos:list comando:c
+                   {: list.add(c); RESULT = list; :}
+                 | /*vazio*/
+                   {: RESULT = new CommandList(); :}
+                 ;
+
+comando  ::= IDENTIFICADOR:id RECEBE expressao:e PT_VIRG 
+             {: RESULT = new Assignment(id, e); :}
+           | RETURN expressao:e PT_VIRG
+             {: RESULT = new Return(e); :}
+           | WHILE ABRE_PAR expressao:e FECHA_PAR comando:c
+             {: RESULT = new While(e, c); :} 
+           | DO comando:c WHILE ABRE_PAR expressao:e FECHA_PAR PT_VIRG
+             {: RESULT = new DoWhile(c, e); :}
+           | IF ABRE_PAR expressao:e FECHA_PAR comando:c
+             {: RESULT = new IfElse(e, c); :}
+           | IF ABRE_PAR expressao:e FECHA_PAR comando:c1 ELSE comando:c2
+             {: RESULT = new IfElse(e, c1, c2); :}
+           | bloco:b
+             {: RESULT = b; :}
+           ;
+
+expressao ::= expressao:e1 VEZES:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 DIVIDIDO:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MAIS:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MENOS:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 OU:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 E:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MENOR:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MENOR_IGUAL:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MAIOR:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 MAIOR_IGUAL:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 IGUAL:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | expressao:e1 DIFERENTE:op expressao:e2
+              {: RESULT = new BinaryOperation(op, e1, e2); :}
+            | MENOS expressao:e
+              {: RESULT = new UnaryMinus(e); :}
+              %prec MENOS_UNARIO
+            | termo:t
+              {: RESULT = t; :}
+            ;
+
+termo ::= ABRE_PAR expressao:e FECHA_PAR
+          {: RESULT = e; :}
+        | IDENTIFICADOR:id
+          {: RESULT = new TermVariable(id); :}
+        | LITERAL_INT:i
+          {: RESULT = new TermInt(i); :}
+        | LITERAL_FLOAT:f
+          {: RESULT = new TermFloat(f); :}
+        | LITERAL_CHAR:c
+          {: RESULT = new TermChar(c); :}
+        ;

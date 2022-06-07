@@ -1,0 +1,60 @@
+
+Exemplo de uso do JFlex com o CUP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Este exemplo mostra um analisador sintático (parser) criado com o CUP e um 
+analisador léxico (lexer) criado com o JFlex para a linguagem XPR-1 (veja 
+documento explicando a linguagem).
+
+Apenas as classes de teste (do pacote "xpr.version1.tests") foram programadas
+diretamente. As demais classes, você deverá gerar com as ferramentas.
+
+
+1. Para gerar o lexer (não precisa)
+-----------------------------------
+
+Clique duas vezes no arquivo "lib\JFlex.jar". Uma janela do JFlex deverá abrir.
+Na opção de "Lexycal specification" dessa janela, abra o arquivo de 
+especificação "Lexer.flex" no diretório "src\xpr\version1". Depois, clique em
+"Generate". A classe "Lexer.java" será criada no mesmo local.
+
+
+2. Para gerar o parser
+----------------------
+
+Pelo Windows Explorer, execute o arquivo "lib\gerar_parser.bat". Ele irá chamar 
+o CUP (arquivo "lib\java-cup-11a.jar"), passando o arquivo de especificação 
+"Parser.cup". As classes "Parser.java" e "sym.java" serão criadas e movidas 
+para o mesmo diretório da especificação. 
+
+(Você também pode rodar pelo Eclipse, configurando como uma "external tool". 
+Coloque como diretorio de trabalho o diretório "lib", coloque qualquer string
+como argumento).
+
+Depois, atualize a lista de arquivos no Eclipse, clicando no projeto e, então,
+pressionando F5.
+
+
+3. Para testar
+--------------
+
+Para testar o parser com o lexer, execute a classe TestParser. Quando pedir o
+nome do arquivo, você pode testar os arquivos "exemplo1.txt" (correto), 
+"exemplo2.txt" (errado) e "exemplo3.txt" (correto, mas usa menos unário).
+
+Para testar apenas o lexer, você pode executar a classe TestLexer.
+
+Recomendo abrir os arquivos "Lexer.flex" e "Parser.cup", comparando-os com a 
+descrição de XPR-1.
+
+
+4. Modificações (durante a aula)
+---------------------------------
+
+1) Criar ações para representar a árvore em memória.
+
+2) Criar as classes da árvore.
+
+
+Pablo Azevedo Sampaio
+22/05/2015

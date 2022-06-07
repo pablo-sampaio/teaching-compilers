@@ -1,0 +1,73 @@
+package xpr.version1;
+
+import java_cup.runtime.*;
+import java.util.HashMap;
+
+action code {:
+	HashMap<String,Integer> table = new HashMap();
+:}
+
+
+/*****  Terminais (tokens) *****/
+
+terminal 	    MAIS, MENOS, VEZES, DIVIDE;
+terminal 	    PT_VIRG, ABRE_PAR, FECHA_PAR, ATRIBUI, DEF;
+terminal String	IDENTIFICADOR;
+terminal String	NUMERO;
+
+
+/***** Nao-terminais *****/
+
+non terminal Integer  expr;
+non terminal 	      program, comand;
+
+
+/***** Precedencia e associatividade *****/
+
+precedence left  MAIS, MENOS;     //simbolos de menor precedencia
+precedence left  VEZES, DIVIDE;   //simbolo de maior precedencia
+
+
+/***** A gramática *****/
+
+program ::= comand program
+          | /*vazio*/ 
+          ;
+
+comand ::= expr:e PT_VIRG
+           {:  
+               System.out.println("VALOR DA EXPRESSAO: " + e);
+           :}
+
+         | DEF IDENTIFICADOR:n ATRIBUI expr:e PT_VIRG
+           {:
+               //System.out.println("Novo valor: " + n + " = " + e);
+               table.put(n, e);
+           :}
+         ;
+
+expr ::= NUMERO:n  
+         {:  RESULT = Integer.parseInt(n);  :}
+       
+       | IDENTIFICADOR:n  
+         {:  RESULT = table.get(n);  :}
+       
+       | expr:e1 MAIS expr:e2
+         {:  RESULT = e1 + e2;  :}
+       
+       | expr:e1 MENOS expr:e2
+         {:  RESULT = e1 - e2;  :}
+       
+       | expr:e1 VEZES expr:e2
+         {:  RESULT = e1 * e2;  :}
+       
+       | expr:e1 DIVIDE expr:e2
+         {:  RESULT = e1 / e2;  :}
+       
+       | MENOS expr:e
+         {:  RESULT = - e;  :}
+       
+       | ABRE_PAR expr:e FECHA_PAR
+         {:  RESULT = e;  :}
+         
+       ;

@@ -1,0 +1,30 @@
+# Project: XPR-Compiler
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = lexer.o $(RES)
+LINKOBJ  = lexer.o $(RES)
+LIBS =  libfl.a  
+INCS = 
+CXXINCS = 
+BIN  = XPR-Compiler.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before XPR-Compiler.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "XPR-Compiler.exe" $(LIBS)
+
+lexer.o: lexer.c
+	$(CC) -c lexer.c -o lexer.o $(CFLAGS)

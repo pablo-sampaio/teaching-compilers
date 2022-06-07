@@ -1,0 +1,117 @@
+package microc.syntax;
+
+import java_cup.runtime.Symbol;
+
+%%
+
+%class Lexer
+%public
+%cup
+%line
+%column
+
+%{
+
+   public int getLine()   { return yyline + 1; }
+   public int getColumn() { return yycolumn + 1; }
+
+%}
+
+%state ML_COMMENT
+
+WHITESPACE=([ \t\f\r\n]+)
+LETRA=[a-zA-Z_]
+DIGITO=[0-9]
+ANY_CHAR=.
+
+%%
+
+<YYINITIAL> {
+ 
+  {WHITESPACE} { /* nenhum token é retornado */ }
+
+  "*"  { return new Symbol(SymbolType.VEZES, yytext()); }
+  "/"  { return new Symbol(SymbolType.DIVIDIDO, yytext()); }
+  "+"  { return new Symbol(SymbolType.MAIS, yytext()); }
+  "-"  { return new Symbol(SymbolType.MENOS, yytext()); }
+  "||" { return new Symbol(SymbolType.OU, yytext()); }
+  "&&" { return new Symbol(SymbolType.E, yytext()); }
+
+  "<"  { return new Symbol(SymbolType.MENOR, yytext()); }
+  "<=" { return new Symbol(SymbolType.MENOR_IGUAL, yytext()); }
+  ">"  { return new Symbol(SymbolType.MAIOR, yytext()); }
+  ">=" { return new Symbol(SymbolType.MAIOR_IGUAL, yytext()); }
+  "==" { return new Symbol(SymbolType.IGUAL, yytext()); }
+  "!=" { return new Symbol(SymbolType.DIFERENTE, yytext()); }
+
+  "="  { return new Symbol(SymbolType.RECEBE, yytext()); }
+  ";"  { return new Symbol(SymbolType.PT_VIRG, yytext()); }
+  ","  { return new Symbol(SymbolType.VIRG, yytext()); }
+  "("  { return new Symbol(SymbolType.ABRE_PAR, yytext()); }
+  ")"  { return new Symbol(SymbolType.FECHA_PAR, yytext()); }
+  "{"  { return new Symbol(SymbolType.ABRE_CHAVE, yytext()); }
+  "}"  { return new Symbol(SymbolType.FECHA_CHAVE, yytext()); }
+
+  "main"   { return new Symbol(SymbolType.MAIN, yytext()); }
+  "if"     { return new Symbol(SymbolType.IF, yytext()); }
+  "else"   { return new Symbol(SymbolType.ELSE, yytext()); }
+  "while"  { return new Symbol(SymbolType.WHILE, yytext()); }
+  "do"     { return new Symbol(SymbolType.DO, yytext()); }
+  "return" { return new Symbol(SymbolType.RETURN, yytext()); }
+  "int"    { return new Symbol(SymbolType.TIPO_INT, yytext()); }
+  "float"  { return new Symbol(SymbolType.TIPO_FLOAT, yytext()); }
+  "char"   { return new Symbol(SymbolType.TIPO_CHAR, yytext()); }
+
+  {LETRA}({LETRA}|{DIGITO})*
+           { return new Symbol(SymbolType.IDENTIFICADOR, yytext()); }
+
+  \'({LETRA}|{DIGITO})\'
+           { return new Symbol(SymbolType.LITERAL_CHAR, new Character(yytext().charAt(1))); }
+  \'\\n\'
+           { return new Symbol(SymbolType.LITERAL_CHAR, new Character('\n')); }
+
+  {DIGITO}*\.{DIGITO}+ 
+           { return new Symbol(SymbolType.LITERAL_FLOAT, new Float(yytext())); }
+  {DIGITO}+ 
+           { return new Symbol(SymbolType.LITERAL_INT, new Integer(yytext())); }
+
+  "//"[^\n]* {
+      /* comentário de uma linha */
+      System.out.println("> comentario de uma linha"); 
+  }
+
+  "/*" { 
+      /* comentário de multiplas linhas */
+      System.out.println("> inicio de comentario de multiplas linhas");
+      yybegin(ML_COMMENT);
+  }
+           
+  {ANY_CHAR} { 
+      System.err.println("Erro lexico: caracter " + yytext() + "invalido "
+                          + "na linha " + getLine() + " e coluna " + getColumn() + ".");
+	  return new Symbol(SymbolType.error);
+  }
+             
+  <<EOF>> {
+      return new Symbol(SymbolType.EOF); 
+  }
+  
+}
+
+<ML_COMMENT> {
+
+  "*/"  { 
+      System.out.println("> fim de comentario de multiplas linhas"); 
+      yybegin(YYINITIAL); 
+  }
+  
+  .|\r|\n  {  
+      /* ignora qualquer outro caractere */ 
+  }
+  
+  <<EOF>> {
+      System.err.println("Fim de arquivo inesperado.");
+	  return new Symbol(SymbolType.error);
+  }
+  
+}

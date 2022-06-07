@@ -1,0 +1,10 @@
+
+- parser manual
+  . fazer verificação de labels direto no parser e remover o verify()
+  . quando existir, pegar na tabela; quando não, criar um e guardar (em outra tabela?)
+    para "preencher" depois
+
+- guardar listas de erros sintáticos e semânticos para uniformizar
+  retorno das análises (não usar mais exceção!)
+
+- verificar "reachability" usando uma pesquisa em extensão

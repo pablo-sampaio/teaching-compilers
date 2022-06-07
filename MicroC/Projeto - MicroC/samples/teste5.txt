@@ -1,0 +1,12 @@
+int main() {
+  int a , b;
+  char b;
+
+  if (a==b) {
+    a = 10;
+  } else {
+    b = 'x';
+  }
+
+  return a + b * 'a';
+}

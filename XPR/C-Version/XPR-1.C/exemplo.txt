@@ -1,0 +1,3 @@
+def aux = 13;
+aux + 10 *9;  // um comentário
+40 + 5 * aux; // e outro...

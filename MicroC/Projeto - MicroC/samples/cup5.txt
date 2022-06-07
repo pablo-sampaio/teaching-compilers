@@ -1,0 +1,9 @@
+
+int aux, temp;
+
+int main() {
+
+  char b$ ;
+
+  return a;
+}

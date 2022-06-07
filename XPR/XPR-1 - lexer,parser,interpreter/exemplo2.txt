@@ -1,0 +1,6 @@
+// exemplo de erro de sintaxe no segundo comando
+
+def aux = 12 + 4 - 20;
+
+3 + 12;
+

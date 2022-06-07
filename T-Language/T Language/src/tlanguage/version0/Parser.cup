@@ -1,0 +1,102 @@
+package tlanguage.version0;
+
+import tlanguage.Token;
+import tlanguage.version0.tree.*;
+import tmachine.Direction;
+
+import java.util.List;
+import java.util.LinkedList;
+
+import java_cup.runtime.*;
+
+
+parser code {:
+   
+   public Program start() throws Exception {
+      Symbol symbol = parse();
+      return (Program)symbol.value;
+   }
+   
+   public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+       report_fatal_error("Erro no token \"" + cur_token + "\"" 
+       						+ " na linha " + ((Token)cur_token).getLine()
+       						+ " na coluna " + ((Token)cur_token).getColumn() + ".", null);
+   }
+   
+:}
+
+/*****  Terminais (tokens) *****/
+
+terminal           INPUT_SET;
+terminal           IF, IF_NOT, WRITE, MOVE, GOTO, LEFT, RIGHT, ACCEPT, REJECT;
+terminal Character SYMBOL_LITERAL;
+terminal String    IDENTIFIER;
+
+terminal           LEFT_BRACE, RIGHT_BRACE, LEFT_BRACKET, RIGHT_BRACKET, 
+                   DOT_DOT, COLON, LINE_BREAK;
+
+
+/***** Nao-terminais *****/
+
+non terminal Program       program;
+non terminal               inputConfiguration, symbolRange;
+non terminal List<Command> mainRoutine;
+non terminal List<Command> commandList;
+non terminal Command       command;
+non terminal Character     symbolExpression;
+non terminal Direction     directionExpression;
+
+
+/***** A gramática *****/
+
+program ::= inputConfiguration mainRoutine:l
+            {:  RESULT = new Program(l);  :}
+          ;
+
+inputConfiguration ::= INPUT_SET  LEFT_BRACE symbolRange RIGHT_BRACE
+                     | /*empty*/
+					 ;
+
+symbolRange ::= SYMBOL_LITERAL DOT_DOT SYMBOL_LITERAL 
+              ;
+
+mainRoutine ::= commandList:cl
+                {:  RESULT = cl;  :}
+              ;
+
+commandList ::= commandList:lst command:c
+                {:  if (c != null) { lst.add(c); }
+                    RESULT = lst;  :}
+              | /*empty*/
+                {:  RESULT = new LinkedList<Command>();  :}
+              ;
+
+command ::= WRITE LEFT_BRACKET SYMBOL_LITERAL:c RIGHT_BRACKET LINE_BREAK
+            {:  RESULT = new Write(c);  :}
+          | MOVE directionExpression:d LINE_BREAK
+            {:  RESULT = new Move(d);  :}
+          | ACCEPT LINE_BREAK
+            {:  RESULT = new Decision(true);  :}
+          | REJECT LINE_BREAK
+            {:  RESULT = new Decision(false);  :}
+          | IDENTIFIER:ident COLON LINE_BREAK
+            {:  RESULT = new Label(ident);  :}
+          | GOTO IDENTIFIER:ident LINE_BREAK
+            {:  RESULT = new Goto(ident);  :}
+          | IF LEFT_BRACKET symbolExpression:c RIGHT_BRACKET GOTO IDENTIFIER:ident LINE_BREAK
+            {:  RESULT = new IfGoto(true, c, ident);  :}
+          | IF_NOT LEFT_BRACKET symbolExpression:c RIGHT_BRACKET GOTO IDENTIFIER:ident LINE_BREAK
+            {:  RESULT = new IfGoto(false, c, ident);  :}
+          | LINE_BREAK
+            {:  RESULT = null;  :}
+          ; 
+
+symbolExpression ::= SYMBOL_LITERAL:c
+                     {:  RESULT = c;  :}
+                   ;
+
+directionExpression ::= LEFT
+                        {:  RESULT = Direction.LEFT;  :}
+                      | RIGHT
+                        {:  RESULT = Direction.RIGHT;  :}
+                      ;

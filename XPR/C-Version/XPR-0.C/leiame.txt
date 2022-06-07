@@ -1,0 +1,20 @@
+
+Há dois projetos do DEV C++ que você pode escolher:
+
+
+XPR-0_Lexer   -  Para testar apeans o lexer. A entrada é feito  pelo
+                 teclado.
+
+XPR-0_Parser  -  Para testar o parser integrado com o lexer. Este 
+                 programa lê o arquivo "programa.txt" e diz se ele 
+                 está sintaticamente correto ou não.
+
+
+Abra o projeto, compile (Ctrl+F9) e execute (Ctrl+F10). Faça alguns
+testes com diferentes entradas, lembrando que a linguagem não aceita
+espaços em branco. Nem aceita números com mais de um dígito.
+
+Depois, examine o código para entender como ele produz a saída.
+
+
+(Pablo A. Sampaio)

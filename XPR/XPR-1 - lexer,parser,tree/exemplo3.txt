@@ -1,0 +1,15 @@
+
+// Um exemplo inspirado em situacoes de divisao de conta em restaurantes
+// Atencao: nao escreva acentos nos arquivos do JFlex
+
+def totalConta 
+            = 176; 
+def totalParticipantes
+            = 10;
+
+def abatimento = 50;  //um sujeito deu 50 reais e foi embora antes
+
+
+// o sujeito que deu 50 reais nao entra na divisao
+(totalConta - abatimento) / (totalParticipantes - 1);
+ 

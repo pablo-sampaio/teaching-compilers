@@ -1,0 +1,115 @@
+package tlanguage.frontend1;
+
+import tlanguage.Token;
+import tlanguage.tree.*;
+
+import java.util.List;
+import java.util.LinkedList;
+
+import java_cup.runtime.*;
+
+
+parser code {:
+   
+   public Program start() throws Exception {
+      Symbol symbol = parse();
+      return (Program)symbol.value;
+   }
+   
+   public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+       report_fatal_error("Erro no token \"" + cur_token + "\"" 
+       						+ " na linha " + ((Token)cur_token).getLine()
+       						+ " na coluna " + ((Token)cur_token).getColumn() + ".", null);
+   }
+   
+:}
+
+/*****  Terminais (tokens) *****/
+
+terminal         INPUT_SET, CONDITION_TYPE, SYMBOL_TYPE, DIRECTION_TYPE, MAIN;
+terminal         IF, ELSE, WRITE, MOVE, GOTO, LEFT, RIGHT, ACCEPT, REJECT, OR, NOT;
+terminal String  SYMBOL_LITERAL, IDENTIFIER;
+
+terminal         LEFT_BRACE, RIGHT_BRACE, LEFT_PAR, RIGHT_PAR,
+                 DOT_DOT, COMMA, COLON, SEMICOLON;
+
+
+/***** Nao-terminais *****/
+
+non terminal             program;
+non terminal  inputConfiguration, symbolRange;
+non terminal         subroutineList;
+non terminal          routine, type;
+non terminal  mainRoutine;
+non terminal          commandList;
+non terminal      command;
+non terminal  expressionList, expression, symbolExpression, directionExpression;
+
+
+/***** Precedencias *****/
+
+precedence left OR;
+precedence right NOT;
+
+
+/***** A gramática *****/
+
+/**  OBSERVAÇÃO : tem muitas extensões! fazer versão 1 sem "else", "while", "not" e "or"   **/
+
+program ::= inputConfiguration subroutineList mainRoutine
+          ;
+
+inputConfiguration ::= INPUT_SET  LEFT_BRACE symbolRange RIGHT_BRACE
+                     | /*empty*/
+					 ;
+
+symbolRange ::= SYMBOL_LITERAL DOT_DOT SYMBOL_LITERAL 
+              ;
+
+subroutineList ::= subroutineList routine
+			     | /*empty*/
+			     ;
+
+routine ::= ;
+
+type ::= CONDITION_TYPE
+       | SYMBOL_TYPE
+       | DIRECTION_TYPE
+       ;
+
+mainRoutine ::= MAIN LEFT_BRACE commandList RIGHT_BRACE
+              ;
+
+commandList ::= commandList command
+              | /*empty*/
+              ;
+
+command ::= IF LEFT_PAR symbolExpression RIGHT_PAR command 
+          | IF LEFT_PAR symbolExpression RIGHT_PAR command ELSE command
+          | WRITE LEFT_PAR SYMBOL_LITERAL RIGHT_PAR SEMICOLON
+          | MOVE directionExpression SEMICOLON
+          | ACCEPT SEMICOLON
+          | REJECT SEMICOLON
+          | IDENTIFIER COLON
+          | GOTO IDENTIFIER SEMICOLON
+          | LEFT_BRACE commandList RIGHT_BRACE
+          | IDENTIFIER LEFT_PAR expressionList RIGHT_PAR SEMICOLON
+          ;
+
+/* SEPARAR POR VIRGULA! */
+expressionList ::= expressionList expression
+                 | /*empty*/
+                 ;
+
+expression ::= symbolExpression
+             | directionExpression
+             ;
+
+symbolExpression ::= SYMBOL_LITERAL
+                   | expression OR expression
+                   | NOT expression 
+                   ;
+
+directionExpression ::= LEFT
+                      | RIGHT
+                      ;
